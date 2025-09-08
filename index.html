@@ -3,117 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <title>Clean and Rumble Kick with Tone.js</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<script src="http://unpkg.com/tone"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<link rel="stylesheet" href="./style.css">
+
 </head>
 <body style="background:black; color:white; font-family:sans-serif; text-align:center; padding:40px;">
-  <h1>Clean and Rumble Kick Generator</h1>
-  <button id="startBtn">Start</button>
-  <button id="stopBtn">Stop</button>
+  
+  
+  <h1 class="text-success">Clean and Rumble Kick Generator</h1>
 
-  <script>
-    const F1 = 43.65;      // fundamental frequency
-    const F4 = F1 * 4;      // starting pitch for kick (~174 Hz)
+  <p id="play-running" class="running text-success fs-3">Playing...</p>
+  <p id="stop-running" class="stop text-danger fs-3">Stop</p>
 
-    // -------------------------------
-    // Function: Kick + Subbass (from first code)
-    // -------------------------------
-    function triggerCleanKick(time) {
-      const now = time || Tone.now();
 
-      // Clean kick oscillator
-      const oscMain = new Tone.Oscillator({
-        type: "sine",
-        frequency: F4,
-        phase: 0,
-        volume: -6
-      });
+  <div class="card mx-auto mt-5 bg-light">
+  <button class="col-sm-6 col-lg-3 mx-auto my-5 btn btn-dark" id="startBtn">Start</button>
+  <button class="col-sm-6 col-lg-3 mx-auto my-5 btn btn-dark" id="stopBtn">Stop</button>
+  </div>
 
-      const ampMain = new Tone.Gain(1);
-      oscMain.connect(ampMain);
 
-      oscMain.frequency.setValueAtTime(F4, now);
-      oscMain.frequency.exponentialRampToValueAtTime(F1, now + 0.063);
-
-      ampMain.gain.setValueAtTime(1, now);
-      ampMain.gain.exponentialRampToValueAtTime(0.0001, now + 0.125);
-
-      oscMain.start(now);
-      oscMain.stop(now + 0.25);
-
-      // Sub bass oscillator
-      const oscSub = new Tone.Oscillator({
-        type: "sine",
-        frequency: F1,
-        phase: 0,
-        volume: -3
-      });
-
-      const ampSub = new Tone.Gain(1);
-      oscSub.connect(ampSub);
-
-      ampSub.gain.setValueAtTime(1, now);
-      ampSub.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
-
-      oscSub.start(now);
-      oscSub.stop(now + 0.5);
-
-      return { main: ampMain, sub: ampSub }; // return for routing
-    }
-
-    // -------------------------------
-    // FX Chain for Rumble (from second code)
-    // -------------------------------
-    const reverb = new Tone.Reverb({ decay: 6, wet: 1 });
-    const distortion = new Tone.Distortion({ distortion: 0.6, oversample: "4x" });
-    const filter = new Tone.Filter(F1, "lowpass");
-    const eqRumble = new Tone.EQ3({ low: +6, mid: 0, high: -6 });
-    const compRumble = new Tone.Compressor({ threshold: -24, ratio: 6 });
-    const rumbleGain = new Tone.Gain(0.2).toDestination(); // rumble controlled by LFO
-
-    // LFO for rumble modulation
-    const lfo = new Tone.LFO({
-      type: "sine",
-      frequency: "1m",
-      min: 0.2,
-      max: 0.6
-    }).connect(rumbleGain.gain);
-
-    // -------------------------------
-    // Clean Kick Gain
-    // -------------------------------
-    const cleanGain = new Tone.Gain(0.6).toDestination();
-
-    // -------------------------------
-    // Loop (Kick + Subbass)
-    // -------------------------------
-    const loop = new Tone.Loop((time) => {
-      // Clean Kick
-      const clean = triggerCleanKick(time);
-      clean.main.connect(cleanGain);
-      clean.sub.connect(cleanGain);
-
-      // Rumble Kick (same source but routed through FX)
-      const rumble = triggerCleanKick(time);
-      rumble.main.connect(reverb);
-      rumble.sub.connect(reverb);
-      reverb.chain(distortion, filter, eqRumble, compRumble, rumbleGain);
-    }, "4n");
-
-    // -------------------------------
-    // Start/Stop Buttons
-    // -------------------------------
-    document.getElementById("startBtn").addEventListener("click", async () => {
-      await Tone.start();
-      Tone.Transport.start();
-      lfo.start();
-      loop.start(0);
-    });
-
-    document.getElementById("stopBtn").addEventListener("click", () => {
-      Tone.Transport.stop();
-      loop.stop(0);
-      lfo.stop();
-    });
-  </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<script src="./script.js"></script>
 </body>
 </html>

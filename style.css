@@ -1,0 +1,43 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Keania+One&display=swap');
+
+*{
+    font-family:  "Keania One", sans-serif;
+}
+
+.card{
+    width: 60%;
+    transition: all .5s ease-in-out ;
+}
+
+.card:hover{
+ filter: invert(100%)
+}
+
+button:active{
+    opacity: .3;
+    transform: scale(.9);
+}
+
+
+.running{
+    display: none;
+    animation: run 1s infinite alternate
+}
+
+.stop{
+    display: none;
+}
+
+@keyframes run {
+
+    from{
+        opacity: 0;
+    }
+
+    to{
+        opacity: 1;
+    }
+    
+}
